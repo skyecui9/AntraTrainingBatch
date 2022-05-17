@@ -75,7 +75,6 @@ SELECT *
 			ORDER BY pp.Name
 
 --12. Write a query that retrieves the unique combination of columns ProductSubcategoryID and Color from the Production.Product table. We do not want any rows that are NULL.in any of the two columns in the result. (Hint: Use IsNull)
-SELECT DISTINCT ISNULL(pp.ProductSubcategoryID,0) ProductSubcategoryID, pp.Color
+SELECT DISTINCT ISNULL(pp.ProductSubcategoryID,0) ProductSubcategoryID, ISNULL(pp.Color,'N/A') Color
 	FROM Production.Product pp
-		WHERE ProductSubcategoryID != 0 AND pp.Color IS NOT NULL
 
