@@ -123,3 +123,47 @@ SELECT p.ProductName, SUM(od.Quantity) TotalOrderQuantities FROM [Order Details]
 	JOIN Products p ON od.ProductID = p.ProductID
 		GROUP BY p.ProductName
 			ORDER BY TotalOrderQuantities DESC
+
+--17. List all Customer Cities that have at least two customers.
+--a. Use union
+--b. Use sub-query and no union
+SELECT c.City FROM Customers c
+	GROUP BY c.City
+		HAVING COUNT(C.City) >= 2
+
+--18. List all Customer Cities that have ordered at least two different kinds of products.
+SELECT DISTINCT c.City FROM Customers c
+	WHERE c.CustomerID IN(
+		SELECT o.CustomerID FROM Orders o
+			JOIN [Order Details] od ON o.OrderID = od.OrderID
+				GROUP BY o.CustomerID
+					HAVING COUNT(DISTINCT od.ProductID) >= 2 )
+ 
+
+
+--19. List 5 most popular products, their average price, and the customer city that ordered most quantity of it. ???
+/*SELECT TOP 5 p.ProductName, AVG(od.UnitPrice) AveragePrice, o.ShipCity FROM [Order Details] od 
+	JOIN Products p ON od.ProductID = p.ProductID
+	JOIN Orders o ON od.OrderID = o.OrderID
+		GROUP BY p.ProductName, o.ShipCity
+			ORDER BY p.ProductName, AveragePrice DESC*/
+WITH CustomerCity
+AS
+(SELECT od.ProductID, o.ShipCity, COUNT(od.Quantity) AS QuantityBought
+FROM Orders o JOIN [Order Details] od ON o.OrderID = od.OrderID
+GROUP BY od.ProductID, o.ShipCity)
+SELECT TOP 5 p.ProductName, p.UnitPrice, cc.ShipCity, COUNT(o.ShipCity) TotalOrderQuantity
+	FROM Products p JOIN [Order Details] od ON p.ProductID = od.ProductID 
+	JOIN Orders o ON od.OrderID = o.OrderID 
+	JOIN CustomerCity cc ON cc.ShipCity = o.ShipCity
+		GROUP BY p.ProductName, p.UnitPrice, cc.ShipCity
+			ORDER BY TotalOrderQuantity DESC
+
+--20. List one city, if exists, that is the city from where the employee sold most orders (not the product quantity) is, 
+---and also the city of most total quantity of products ordered from. (tip: join  sub-query)
+
+
+
+
+--21. How do you remove the duplicates record of a table?
+--- Use ROW_NUMBER() to filter out all the duplicated rows and then use DELETE to erase those records.
